@@ -1,0 +1,24 @@
+# ports:
+#     http: 8080
+#     debug: 5858
+
+# existing config...
+ports:
+    http: 8081 # or whatever users should run on
+    debug: 5859
+
+# add this block
+express:
+    port: 8081
+
+auth:
+    jwt_secret: "supersecret"
+
+spec:
+    petstore: "http://users.swagger.io/v2/swagger.json"
+
+mongo:
+    url: "mongodb://mongo:27017"
+
+# none/debug/info
+loglevel: info

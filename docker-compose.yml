@@ -1,0 +1,56 @@
+services:
+    neo4j:
+        container_name: ms_neo4j
+        image: neo4j:5
+        environment:
+            NEO4J_AUTH: "none"
+        ports:
+            - "7474:7474"
+            - "7687:7687"
+
+    mongo:
+        container_name: ms_mongo
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        volumes:
+            - "./mongo/db:/data/db"
+
+    petstore:
+        build: ./petstore
+        container_name: ms_petstore
+        depends_on:
+            - mongo
+            - otel_collector
+            - jaeger
+        volumes:
+            - "./petstore:/src/app"
+        working_dir: "/src/app"
+        ports:
+            - "8080:8080"
+            - "5858:5858"
+        command: npm start
+
+    users:
+        build: ./users
+        container_name: ms_users
+        depends_on:
+            - neo4j
+            - otel_collector
+            - jaeger
+        volumes:
+            - "./users:/src/app"
+        working_dir: "/src/app"
+        ports:
+            - "8081:8081"
+            - "5859:5859"
+        command: npm start
+
+    nginx:
+        build: ./nginx
+        container_name: ms_nginx
+        depends_on:
+            - petstore
+            - users
+        ports:
+            - "80:80"
